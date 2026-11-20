@@ -310,3 +310,6 @@ body{
   .game-sidebar .action-card .actions button { font-size: 10px; }
   .toolbar button { font-size: 10px; }
 }
+
+/* V23 — links do menu com a mesma aparência dos botões */
+.home-links a.secondary{display:flex;align-items:center;justify-content:center;min-height:42px;padding:8px 12px;text-align:center;text-decoration:none;box-sizing:border-box}

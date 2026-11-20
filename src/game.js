@@ -9,8 +9,8 @@ function rememberHuman(kind,details={}){if(!G||G.mode!=="machine"||G.turn==="red
 const COLORS={blue:"Azul",green:"Verde",pink:"Rosa",yellow:"Amarela",red:"Provações"};
 // Número de impactos necessários para destruir cada alvo, por arma.
 const DAMAGE={
-  tank:{tank:3,patrol:5,drone:2,aircraft:1},
-  patrol:{tank:2,patrol:2,drone:2,aircraft:1},
+  tank:{tank:2,patrol:2,drone:1,aircraft:1},
+  patrol:{tank:2,patrol:2,drone:1,aircraft:1},
   baseCenter:{tank:3,patrol:4,drone:2,aircraft:2},
   basePeripheral:{tank:null,patrol:null,drone:2,aircraft:2}
 };
@@ -48,14 +48,13 @@ function renderReserve(){
 }
 function unitStatusText(u){
  const owner=team(u.owner)?.name||u.owner;
- const damage=Object.entries(u.damage||{}).filter(([,v])=>v>0).map(([weapon,v])=>{
-  const limit=DAMAGE[u.type]?.[weapon]??null;
-  const remaining=limit===null?null:Math.max(0,limit-v);
-  return `${weapon}: ${v} impacto(s)${remaining!==null?` • ${remaining} para destruir`:``}`;
- }).join("\\n")||"Sem danos registrados";
+ const damage=Object.entries(u.damage||{}).filter(([,v])=>v>0).map(([weapon,v])=>`${weapon}: ${v} impacto(s)`).join("\\n")||"Sem danos registrados";
+ const groundHits=(u.damage?.tank||0)+(u.damage?.patrol||0);
+ const airHits=(u.damage?.aircraft||0)+(u.damage?.drone||0);
  const totalHits=Object.values(u.damage||{}).reduce((sum,v)=>sum+v,0);
+ const remainingText=airHits? "Veículo destruído por ataque aéreo":`${Math.max(0,2-groundHits)} impacto(s) terrestre(s) restante(s) para destruição`;
  const flags=[u.aa?"Defesa antiaérea ATIVADA":"Defesa antiaérea desligada",u.dodge?"Esquiva preparada":"Esquiva não preparada",u.type==="tank"?(u.airAvailable?"Apoio aéreo disponível":"Apoio aéreo já utilizado/perdido"):(u.droneAvailable?"Drone disponível":"Drone já utilizado/perdido"),u.moved?"Já se moveu nesta rodada":"Ainda pode mover",u.actionUsed?"Já realizou ação nesta rodada":"Ação complementar disponível"];
- return `${owner} • ${u.type==="tank"?"Tanque":"Patrulha"}\\nImpactos totais: ${totalHits}\\n${flags.join("\\n")}\\nDanos por arma:\\n${damage}`;
+ return `${owner} • ${u.type==="tank"?"Tanque":"Patrulha"}\\nImpactos totais: ${totalHits}\\n${remainingText}\\n${flags.join("\\n")}\\nDanos por arma:\\n${damage}`;
 }
 function baseStatusText(b){
  const owner=team(b.owner)?.name||b.owner,alive=b.cells.filter(p=>p.hp>0).length,occupied=unitAt(b.center.r,b.center.c).length>0;
@@ -75,7 +74,10 @@ function attackableCells(u){
   for(let n=1;n<=range;n++){
    const r=u.r+dr*n,c=u.c+dc*n;if(!inside(r,c))break;
    const units=unitAt(r,c);
-   if(units.length){if(units[0].owner!==u.owner)out.add(`${r},${c}`);break}
+   if(units.length){
+    if(units.some(x=>x.owner!==u.owner))out.add(`${r},${c}`);
+    break;
+   }
    const b=baseAt(r,c);
    if(b){if(b.center.r===r&&b.center.c===c&&b.owner!==u.owner)out.add(`${r},${c}`);break}
   }
@@ -172,11 +174,14 @@ function attackAt(u,r,c){
  let target=null,baseTarget=null;
  for(let i=1;i<=distance;i++){
   const rr=u.r+Math.sign(dr)*i,cc=u.c+Math.sign(dc)*i,us=unitAt(rr,cc);
-  if(us.length){target=us[0];break}
+  if(us.length){
+   target=us.find(x=>x.owner!==u.owner)||us[0];
+   break;
+  }
   const b=baseAt(rr,cc),cell=b&&baseCell(b,rr,cc);
   if(b){if(rr===b.center.r&&cc===b.center.c&&cell&&cell.hp>0)baseTarget={base:b,cell};break}
  }
- if(!target&&!baseTarget){cancelAim("Nenhum alvo válido na linha de tiro. Unidades bloqueiam o disparo; fogo terrestre só atinge o centro da base.");return}
+ if(!target&&!baseTarget){cancelAim("Nenhum alvo válido na linha de tiro. Verifique se há uma unidade inimiga ou o centro de uma base na linha de tiro.");return}
  if(target&&target.owner===u.owner&&!confirm("Fogo amigo! Deseja atacar sua própria unidade?")){selected={id:u.id,r:u.r,c:u.c,mode:"unit"};render();return}
  rememberHuman("attack",{weapon:u.type,target:target?target.type:"base",targetPos:[r,c]});
  if(target&&target.dodge){target.dodge=false;showCombatNotice(`${target.type==="tank"?"Tanque":"Patrulha"} esquivou do ataque!`,"success");log(`${target.type} esquivou do ataque direto.`)}
@@ -202,10 +207,19 @@ function showImpactSmoke(r,c){
 function damageUnit(target,weapon){
  const required=DAMAGE[target.type]?.[weapon];
  if(!required){log(`Este ataque não causa dano a ${target.type}.`);return false}
- target.damage=target.damage||{};target.damage[weapon]=(target.damage[weapon]||0)+1;
- const remaining=required-target.damage[weapon];
- if(remaining<=0){G.units=G.units.filter(x=>x.id!==target.id);log(`${target.type} destruído após ${required} impacto(s) de ${weapon}.`);showCombatNotice(`${target.type==="tank"?"Tanque":"Patrulha"} destruído!`,"danger")}
- else{log(`${target.type} atingido: ${target.damage[weapon]}/${required} impactos desta arma.`);showCombatNotice(`${target.type==="tank"?"Tanque":"Patrulha"} atingido! ${target.damage[weapon]}/${required} impactos`,"damage")}
+ target.damage=target.damage||{};
+ target.damage[weapon]=(target.damage[weapon]||0)+1;
+ const airHit=weapon==="aircraft"||weapon==="drone";
+ const hits=airHit?target.damage[weapon]:(target.damage.tank||0)+(target.damage.patrol||0);
+ const threshold=airHit?1:2;
+ if(hits>=threshold){
+  G.units=G.units.filter(x=>x.id!==target.id);
+  log(`${target.type} destruído após ${airHit?"um ataque aéreo":"dois impactos terrestres"}.`);
+  showCombatNotice(`${target.type==="tank"?"Tanque":"Patrulha"} destruído!`,"danger");
+ }else{
+  log(`${target.type} atingido: ${hits}/${threshold} impactos para destruição.`);
+  showCombatNotice(`${target.type==="tank"?"Tanque":"Patrulha"} atingido! ${hits}/${threshold} impactos`,"damage");
+ }
  return true;
 }
 function damageBaseCell(base,cell,weapon){
@@ -327,7 +341,12 @@ function aiLineTarget(u,t){
  return true;
 }
 function aiDamageProgress(u){return Object.values(u.damage||{}).reduce((a,b)=>a+b,0)}
-function aiRemainingHits(target,weapon){let n=DAMAGE[target.type]?.[weapon];return n?Math.max(0,n-((target.damage||{})[weapon]||0)):99}
+function aiRemainingHits(target,weapon){
+ let n=DAMAGE[target.type]?.[weapon];if(!n)return 99;
+ const d=target.damage||{};
+ if(weapon==="tank"||weapon==="patrol")return Math.max(0,2-(d.tank||0)-(d.patrol||0));
+ return Math.max(0,1-(d[weapon]||0));
+}
 function aiCanBuild(u){for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){let r=u.r+dr,c=u.c+dc;if(!inside(r,c)||baseAt(r,c)||(ownerAt(r,c)!=="neutral"&&ownerAt(r,c)!==u.owner))return false}return true}
 function aiBaseThreat(b){let e=G.units.filter(u=>u.owner!=="red");return e.reduce((s,u)=>s+Math.max(0,7-aiDistance(u,b.center)),0)}
 function aiMemoryProfile(){let m=readAIMemory(),s=m.stats||{};return {memory:m,aggressive:(s.attack||0)+(s.move||0),builder:s.buildBase||0,deploy:s.deploy||0}}
@@ -536,9 +555,23 @@ $("home-local").onclick=()=>openSetup("local");
 $("back-home").onclick=()=>{$("setup").classList.add("hidden");$("home").classList.remove("hidden")};
 $("home-pieces").onclick=()=>{$("home").classList.add("hidden");$("pieces-reference").classList.remove("hidden")};
 $("pieces-close").onclick=()=>{$("pieces-reference").classList.add("hidden");$("home").classList.remove("hidden")};
-$("home-rules").onclick=()=>startMessage("Regras de Batalha Terrestre","Cada jogador tem três operações por rodada. Um veículo pode mover-se uma vez e realizar uma ação complementar. As peças começam na reserva. O tabuleiro possui 16 colunas e 10 linhas. Bases ocupam 3×3 casas e podem ser configuradas em defesa terrestre ou antiaérea quando o centro estiver desocupado.",()=>{});
-$("mode").addEventListener("change",updateSetupMode);updateSetupMode();$("start").addEventListener("click",newGame);$("end-turn").onclick=endTurn;$("menu").onclick=()=>{if(confirm("Voltar ao menu? A partida ficará salva.")){$("game").classList.add("hidden");$("setup").classList.add("hidden");$("home").classList.remove("hidden")}};$("music").onclick=()=>{music=!music;if(music)gameAudio.startMusic();else gameAudio.stopMusic();$("music").textContent=`♫ Música: ${music?"ligada":"desligada"}`};$("sound").onclick=()=>{effects=!effects;$("sound").textContent=`Efeitos: ${effects?"ligados":"desligados"}`};
-$("resume").onclick=()=>{try{G=JSON.parse(localStorage.getItem(SAVE));if(!G)throw 0;$("setup").classList.add("hidden");$("game").classList.remove("hidden");render();if(G.mode==="machine"&&G.turn==="red")setTimeout(aiTurn,500)}catch{alert("Não há partida salva válida.")}};
+$("home-credits").onclick=()=>startMessage("Créditos","Desenvolvido por Ricardo Augusto de Oliveira, criador do Google Site Renova-me Deus Meu.",()=>{});$("home-rules").onclick=()=>startMessage("Regras de Batalha Terrestre","Cada jogador tem três operações por rodada. Um veículo pode mover-se uma vez e realizar uma ação complementar. As peças começam na reserva. O tabuleiro possui 16 colunas e 10 linhas. Tanques e patrulhas têm o mesmo poder de fogo: dois impactos terrestres acumulados destroem qualquer um dos dois. Avião e drone destroem tanque ou patrulha com um único ataque, desde que a defesa antiaérea não intercepte o voo. Tanques têm alcance de tiro de até 5 casas e movimento de até 2; patrulhas têm alcance de tiro de até 3 casas e movimento de até 3. Os ataques terrestres seguem linhas retas, na horizontal ou vertical, e são bloqueados pela primeira unidade ou base. Bases ocupam 3×3 casas e podem ser configuradas em defesa terrestre ou antiaérea quando o centro estiver desocupado.",()=>{});$("mode").addEventListener("change",updateSetupMode);updateSetupMode();$("start").addEventListener("click",newGame);$("end-turn").onclick=endTurn;$("menu").onclick=()=>{if(confirm("Voltar ao menu? A partida ficará salva.")){$("game").classList.add("hidden");$("setup").classList.add("hidden");$("home").classList.remove("hidden")}};$("music").onclick=()=>{music=!music;if(music)gameAudio.startMusic();else gameAudio.stopMusic();$("music").textContent=`♫ Música: ${music?"ligada":"desligada"}`};$("sound").onclick=()=>{effects=!effects;$("sound").textContent=`Efeitos: ${effects?"ligados":"desligados"}`};
+function migrateSavedCombatState(){
+ if(!G||!Array.isArray(G.units))return;
+ const before=G.units.length;
+ G.units=G.units.filter(u=>{
+  const d=u.damage||{};
+  const ground=(d.tank||0)+(d.patrol||0);
+  const air=(d.aircraft||0)+(d.drone||0);
+  return ground<2&&air<1;
+ });
+ if(G.units.length<before){
+  G.log=G.log||[];
+  G.log.unshift("Regra de danos atualizada: veículos que já haviam recebido dois impactos terrestres ou um ataque aéreo foram removidos.");
+  G.log=G.log.slice(0,18);
+ }
+}
+$("resume").onclick=()=>{try{G=JSON.parse(localStorage.getItem(SAVE));migrateSavedCombatState();save();if(!G)throw 0;$("setup").classList.add("hidden");$("game").classList.remove("hidden");render();if(G.mode==="machine"&&G.turn==="red")setTimeout(aiTurn,500)}catch{alert("Não há partida salva válida.")}};
 try{let s=JSON.parse(localStorage.getItem(SAVE));if(s&&s.status==="playing")$("resume").classList.remove("hidden")}catch{}
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(()=>{}));
 
