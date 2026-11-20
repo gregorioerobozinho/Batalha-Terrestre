@@ -123,6 +123,12 @@ function renderActions(){
   return;
  }
  if(!selected?.id)return;
+ if(!selected.mode||selected.mode==="unit"){
+  let clear=document.createElement("button");
+  clear.textContent="Desmarcar seleção";
+  clear.onclick=()=>{selected=null;reservePick=null;$("instruction").textContent="Seleção desmarcada. Escolha uma unidade ou peça da reserva.";render()};
+  el.append(clear);
+ }
  let u=G.units.find(x=>x.id===selected.id);
  if(!u||u.owner!==G.turn)return;
  let acts=[],slotAvailable=G.ops>0||G.used.includes(u.id);
@@ -142,11 +148,11 @@ function renderActions(){
  });
 }
 function setBaseMode(b,mode){if(b.owner!==G.turn||unitAt(b.center.r,b.center.c).length){alert("Só é possível configurar a base quando seu centro estiver desocupado.");return}b.mode=mode;log(`Base alterada para defesa ${mode==="aa"?"antiaérea":"terrestre"}.`);selected=null;save();render()}
-function clickCell(r,c){if(G.status!=="playing")return;if(selected?.mode==="air-target"){let u=G.units.find(x=>x.id===selected.id);if(u){executeAirStrike(u,selected.airType,r,c)}return}if(selected?.mode==="attack"){let u=G.units.find(x=>x.id===selected.id);if(u)attackAt(u,r,c);return}if(selected?.mode==="move"){let u=G.units.find(x=>x.id===selected.id);if(u){moveTo(u,r,c);return}}if(reservePick){deploy(reservePick,r,c);return}let us=unitAt(r,c);if(!us.length){let b=baseAt(r,c);if(b&&b.center.r===r&&b.center.c===c){selected={baseId:b.id,r,c};reservePick=null;$("instruction").textContent="Base selecionada: escolha defesa terrestre ou antiaérea (centro desocupado).";render();return}}if(selected&&selected.id&&us.length===0){let u=G.units.find(x=>x.id===selected.id);if(u&&u.owner===G.turn){moveTo(u,r,c);return}}if(us.length){let u=us.find(x=>x.owner===G.turn)||us[0];selected={id:u.id,r,c,mode:"unit"};$("instruction").textContent=`${u.type} • ${Object.values(u.damage||{}).reduce((a,v)=>a+v,0)} impacto(s) recebido(s) • selecione uma ação.`}else{selected=null;$("instruction").textContent="Selecione uma unidade ou uma peça da reserva."}render()}
+function clickCell(r,c){if(G.status!=="playing")return;if(selected?.mode==="air-target"){let u=G.units.find(x=>x.id===selected.id);if(u){executeAirStrike(u,selected.airType,r,c)}return}if(selected?.mode==="attack"){let u=G.units.find(x=>x.id===selected.id);if(u)attackAt(u,r,c);return}if(selected?.mode==="move"){let u=G.units.find(x=>x.id===selected.id);if(u){moveTo(u,r,c);return}}if(reservePick){deploy(reservePick,r,c);return}let us=unitAt(r,c);if(!us.length){let b=baseAt(r,c);if(b&&b.center.r===r&&b.center.c===c){selected={baseId:b.id,r,c};reservePick=null;$("instruction").textContent="Base selecionada: escolha defesa terrestre ou antiaérea (centro desocupado).";render();return}}if(selected&&selected.id&&us.length===0){$("instruction").textContent="Peça selecionada. Escolha “Mover” no painel de ações ou desmarque a seleção.";render();return}if(us.length){let u=us.find(x=>x.owner===G.turn)||us[0];selected={id:u.id,r,c,mode:"unit"};$("instruction").textContent=`${u.type} • ${Object.values(u.damage||{}).reduce((a,v)=>a+v,0)} impacto(s) recebido(s) • selecione uma ação.`}else{selected=null;$("instruction").textContent="Selecione uma unidade ou uma peça da reserva."}render()}
 function canOp(u,kind="action"){if(G.ops<=0&&!G.used.includes(u.id)){alert("As três operações desta rodada já foram usadas.");return false}if(kind==="move"&&u.moved){alert("Esta peça já se movimentou nesta rodada.");return false}if(kind==="action"&&u.actionUsed){alert("Esta peça já realizou sua ação complementar nesta rodada.");return false}return true}function spend(u,kind="action"){if(!G.used.includes(u.id)){G.ops--;G.used.push(u.id)}if(kind==="move")u.moved=true;else u.actionUsed=true;u.used=true;save();}
 function deploy(type,r,c){let t=team(G.turn),start=G.turn===G.teams[0].id&&G.mode==="local"?H-1:(G.turn==="red"?0:H-1);if(G.turn!=="red"&&G.mode==="machine")start=H-1;if(G.mode==="local")start=G.teams[0].id===G.turn?H-1:0;if(r!==start||unitAt(r,c).length||!inside(r,c)){alert("Escolha uma casa vazia na sua linha inicial.");return}if(t.reserve[type]<=0){alert("Não há unidades desse tipo na reserva.");return}if(G.ops<=0){alert("Sem operações restantes.");return}t.reserve[type]--;rememberHuman("deploy",{type,column:c});let u=createUnit(type,G.turn,r,c);G.used.push(u.id);G.ops--;u.actionUsed=true;reservePick=null;selected={id:u.id,r,c};log(`${t.name} posicionou ${type} na linha inicial.`);afterAction();}
 function path(u,r,c,max){let dr=r-u.r,dc=c-u.c;if(Math.abs(dr)+Math.abs(dc)===0||dr!==0&&dc!==0||Math.abs(dr)+Math.abs(dc)>max)return null;let n=Math.max(Math.abs(dr),Math.abs(dc)),out=[];for(let i=1;i<=n;i++){let rr=u.r+Math.sign(dr)*i,cc=u.c+Math.sign(dc)*i;if(!inside(rr,cc)||unitAt(rr,cc).length)return null;out.push([rr,cc])}return out}
-function chooseMove(u){if((G.round||1)===1){alert("Na primeira rodada, os veículos só podem ser posicionados na linha inicial. O movimento será liberado a partir da segunda rodada.");return}if(!canOp(u,"move"))return;$("instruction").textContent=`Toque numa casa livre (tanque: até 2; patrulha: até 3 casas ortogonais).`;selected={id:u.id,r:u.r,c:u.c,mode:"move"};render()}
+function chooseMove(u){if((G.round||1)===1){alert("Na primeira rodada, os veículos só podem ser posicionados na linha inicial. O movimento será liberado a partir da segunda rodada.");return}if(!canOp(u,"move"))return;$("instruction").textContent=`Escolha uma casa livre para mover (tanque: até 2; patrulha: até 3 casas ortogonais). Use “Desistir do movimento” para cancelar sem gastar operação.`;selected={id:u.id,r:u.r,c:u.c,mode:"move"};render()}
 function triggerBaseGroundDefense(u,oldR,oldC){
  for(const b of G.bases){
   if(b.owner===u.owner||b.mode!=="ground")continue;
@@ -164,29 +170,58 @@ function triggerBaseGroundDefense(u,oldR,oldC){
 }
 function moveTo(u,r,c){if(selected?.mode!=="move"&&selected?.mode!=="unit")return;if((G.round||1)===1){alert("Movimento bloqueado na primeira rodada. Posicione suas unidades na linha inicial; o movimento será liberado na segunda rodada.");selected=null;render();return}if(!canOp(u,"move"))return;let p=path(u,r,c,u.type==="tank"?2:3);if(!p){alert("Movimento inválido: apenas em linha reta, sem atravessar peças, respeitando o alcance.");return}rememberHuman("move",{type:u.type,from:[u.r,u.c],to:[r,c]});const oldR=u.r,oldC=u.c;u.r=r;u.c=c;u.direction=c>selected.c?"right":c<selected.c?"left":r<selected.r?"front":"back";spend(u,"move");const baseHit=triggerBaseGroundDefense(u,oldR,oldC);if(effects)(u.type==="tank"?gameAudio.playTankMovement():gameAudio.playPatrolMovement());log(`${team(u.owner).name} moveu ${u.type}.`);selected={id:u.id,r,c};calcTerritory();save();render();if(baseHit)showImpactSmoke(r,c);if(checkVictory())return;}
 function chooseAttack(u){if(!canOp(u))return;$("instruction").textContent=`Alvos destacados em amarelo: escolha um veículo inimigo ou o centro da base, em linha reta, até ${u.type==="tank"?5:3} casas.`;selected={id:u.id,r:u.r,c:u.c,mode:"attack"};render()}
-function attackAt(u,r,c){
- if(!canOp(u,"action"))return;
+function resolveGroundTarget(u,r,c){
  const dr=r-u.r,dc=c-u.c,range=u.type==="tank"?5:3;
- const cancelAim=(message)=>{alert(message);selected={id:u.id,r:u.r,c:u.c,mode:"unit"};$("instruction").textContent="Ataque não realizado. Escolha novamente a unidade ou outra ação.";render()};
- if((dr!==0&&dc!==0)||(!dr&&!dc)){cancelAim("O ataque terrestre exige um alvo na mesma linha ou coluna.");return}
+ if((dr!==0&&dc!==0)||(!dr&&!dc))return {ok:false,reason:"direction"};
  const distance=Math.abs(dr)+Math.abs(dc);
- if(distance>range){cancelAim(`Alvo fora do alcance. ${u.type==="tank"?"Tanque: até 5":"Patrulha: até 3"} casas ortogonais. Nenhuma operação foi consumida.`);return}
- let target=null,baseTarget=null;
+ if(distance>range)return {ok:false,reason:"range"};
  for(let i=1;i<=distance;i++){
-  const rr=u.r+Math.sign(dr)*i,cc=u.c+Math.sign(dc)*i,us=unitAt(rr,cc);
-  if(us.length){
-   target=us.find(x=>x.owner!==u.owner)||us[0];
-   break;
+  const rr=u.r+Math.sign(dr)*i,cc=u.c+Math.sign(dc)*i;
+  const occupants=unitAt(rr,cc);
+  if(occupants.length){
+   const target=occupants.find(x=>x.owner!==u.owner)||occupants[0];
+   return i===distance?{ok:true,target,baseTarget:null}:{ok:false,reason:"blocked"};
   }
-  const b=baseAt(rr,cc),cell=b&&baseCell(b,rr,cc);
-  if(b){if(rr===b.center.r&&cc===b.center.c&&cell&&cell.hp>0)baseTarget={base:b,cell};break}
+  const base=baseAt(rr,cc);
+  if(base){
+   const cell=baseCell(base,rr,cc);
+   if(i===distance&&rr===base.center.r&&cc===base.center.c&&cell&&cell.hp>0&&base.owner!==u.owner)
+    return {ok:true,target:null,baseTarget:{base,cell}};
+   return {ok:false,reason:"blocked"};
+  }
  }
- if(!target&&!baseTarget){cancelAim("Nenhum alvo válido na linha de tiro. Verifique se há uma unidade inimiga ou o centro de uma base na linha de tiro.");return}
- if(target&&target.owner===u.owner&&!confirm("Fogo amigo! Deseja atacar sua própria unidade?")){selected={id:u.id,r:u.r,c:u.c,mode:"unit"};render();return}
+ return {ok:false,reason:"empty"};
+}
+function attackAt(u,r,c,options={}){
+ if(!canOp(u,"action"))return false;
+ const result=resolveGroundTarget(u,r,c);
+ const cancelAim=(message)=>{
+  if(!options.silent)alert(message);
+  selected={id:u.id,r:u.r,c:u.c,mode:"unit"};
+  $("instruction").textContent="Ataque não realizado. Escolha novamente a unidade ou outra ação.";
+  render();
+  return false;
+ };
+ if(!result.ok){
+  if(result.reason==="direction")return cancelAim("O ataque terrestre exige um alvo na mesma linha ou coluna.");
+  if(result.reason==="range")return cancelAim(`Alvo fora do alcance. ${u.type==="tank"?"Tanque: até 5":"Patrulha: até 3"} casas ortogonais. Nenhuma operação foi consumida.`);
+  return cancelAim("Nenhum alvo válido na linha de tiro. Verifique se há uma unidade inimiga ou o centro de uma base na linha de tiro.");
+ }
+ const {target,baseTarget}=result;
+ if(target&&target.owner===u.owner&&!options.silent&&!confirm("Fogo amigo! Deseja atacar sua própria unidade?")){
+  selected={id:u.id,r:u.r,c:u.c,mode:"unit"};render();return false;
+ }
  rememberHuman("attack",{weapon:u.type,target:target?target.type:"base",targetPos:[r,c]});
- if(target&&target.dodge){target.dodge=false;showCombatNotice(`${target.type==="tank"?"Tanque":"Patrulha"} esquivou do ataque!`,"success");log(`${target.type} esquivou do ataque direto.`)}
- else if(target)damageUnit(target,u.type);else damageBaseCell(baseTarget.base,baseTarget.cell,u.type);
- spend(u);if(effects)gameAudio.playExplosion();log(`${team(u.owner).name} atacou ${target?target.type:"centro de base"}.`);afterAction();showImpactSmoke(r,c);
+ if(target&&target.dodge){
+  target.dodge=false;
+  showCombatNotice(`${target.type==="tank"?"Tanque":"Patrulha"} esquivou do ataque!`,"success");
+  log(`${target.type} esquivou do ataque direto.`);
+ }else if(target)damageUnit(target,u.type);
+ else damageBaseCell(baseTarget.base,baseTarget.cell,u.type);
+ spend(u);if(effects)gameAudio.playExplosion();
+ log(`${team(u.owner).name} atacou ${target?target.type:"centro de base"}.`);
+ afterAction();showImpactSmoke(r,c);
+ return true;
 }
 function showCombatNotice(message,kind="info"){
  let el=document.getElementById("combat-notice");
@@ -326,19 +361,10 @@ function endTurn(){if(G.status!=="playing"||checkVictory())return;let current=G.
 // Inteligência estratégica Provações — heurística determinística, sem acesso a informação oculta.
 function aiDistance(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
 function aiLineTarget(u,t){
- if(u.r!==t.r&&u.c!==t.c)return false;
- const d=aiDistance(u,t),range=u.type==="tank"?5:3;
- if(!d||d>range)return false;
- const firstAtTarget=unitAt(t.r,t.c)[0];
- if(t.id&&firstAtTarget?.id!==t.id)return false;
- if(!t.id&&firstAtTarget)return false; // A vehicle in the base center protects that cell.
- const sr=Math.sign(t.r-u.r),sc=Math.sign(t.c-u.c);
- for(let i=1;i<d;i++){
-  const r=u.r+sr*i,c=u.c+sc*i;
-  const occupants=unitAt(r,c),base=baseAt(r,c),cell=base&&baseCell(base,r,c);
-  if(occupants.length||(cell&&cell.hp>0))return false;
- }
- return true;
+ const resolved=resolveGroundTarget(u,t.r,t.c);
+ if(!resolved.ok)return false;
+ if(t.id)return resolved.target?.id===t.id;
+ return resolved.baseTarget?.base?.id===t.id || !!resolved.baseTarget;
 }
 function aiDamageProgress(u){return Object.values(u.damage||{}).reduce((a,b)=>a+b,0)}
 function aiRemainingHits(target,weapon){
@@ -357,7 +383,7 @@ function aiScoreAttack(u,t){let hits=aiRemainingHits(t,u.type);if(hits>=99)retur
 function aiBestAttack(){
  let best=null;
  for(const u of G.units.filter(x=>x.owner==="red"&&!x.actionUsed&&(G.ops>0||G.used.includes(x.id)))){
-  for(const t of G.units.filter(x=>x.owner!=="red"&&unitAt(x.r,x.c)[0]?.id===x.id))if(aiLineTarget(u,t)){
+  for(const t of G.units.filter(x=>x.owner!=="red"&&unitAt(x.r,x.c).some(v=>v.id===x.id)))if(aiLineTarget(u,t)){
    let score=aiScoreAttack(u,t);if(score>0&&(!best||score>best.score))best={kind:"attack",u,t,score};
   }
   for(const b of G.bases.filter(x=>x.owner!=="red")){
@@ -450,13 +476,11 @@ async function aiExecute(choice){
  if(choice.kind!=="move"&&u.actionUsed)return false;
  if(choice.kind==="attack"){
   selected={id:u.id,r:u.r,c:u.c,mode:"attack"};
-  attackAt(u,choice.t.r,choice.t.c);
-  return true;
+  return attackAt(u,choice.t.r,choice.t.c,{silent:true});
  }
  if(choice.kind==="baseAttack"){
   selected={id:u.id,r:u.r,c:u.c,mode:"attack"};
-  attackAt(u,choice.b.center.r,choice.b.center.c);
-  return true;
+  return attackAt(u,choice.b.center.r,choice.b.center.c,{silent:true});
  }
  if(choice.kind==="air"){
   const candidate=choice.target;
