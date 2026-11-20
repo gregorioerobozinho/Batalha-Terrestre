@@ -224,3 +224,147 @@ body{
 @media(max-width:600px){
  .cell .damage-count{min-width:11px;height:11px;padding:0 2px;font-size:7px;top:0;right:0}
 }
+
+
+/* V20 — layout vertical exclusivo do aplicativo instalado (PWA).
+   A versão aberta no navegador mantém o layout web atual. */
+@media (display-mode: standalone) and (orientation: portrait),
+       (display-mode: fullscreen) and (orientation: portrait) {
+  html, body {
+    min-height: 100%;
+    overflow-x: hidden;
+  }
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .app-shell {
+    width: 100%;
+    max-width: 680px;
+    min-height: 100dvh;
+    margin: 0 auto;
+    padding:
+      max(7px, env(safe-area-inset-top))
+      max(7px, env(safe-area-inset-right))
+      max(12px, env(safe-area-inset-bottom))
+      max(7px, env(safe-area-inset-left));
+  }
+  .game-layout,
+  .game-layout.controls-left {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+    align-items: start;
+  }
+  .game-layout .board-wrap,
+  .game-layout.controls-left .board-wrap {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    min-width: 0;
+  }
+  .game-layout .game-sidebar,
+  .game-layout.controls-left .game-sidebar {
+    grid-column: 1;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+  }
+  .game-sidebar .side-card {
+    min-width: 0;
+    padding: 8px;
+  }
+  .game-sidebar .side-card h3 {
+    font-size: 12px;
+    margin-bottom: 7px;
+  }
+  .game-sidebar .action-card {
+    grid-column: 1 / -1;
+  }
+  .game-sidebar .action-card .actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+  .game-sidebar .action-card .actions button {
+    min-width: 0;
+    min-height: 38px;
+    padding: 7px 5px;
+    font-size: 10px;
+  }
+  .game-sidebar .side-card .reserve button.reserve-unit {
+    grid-template-columns: 28px minmax(0, 1fr) 22px;
+    min-height: 42px;
+    padding: 4px;
+    gap: 4px;
+  }
+  .game-sidebar .reserve-unit img {
+    width: 27px !important;
+    height: 30px !important;
+  }
+  .game-sidebar .reserve-unit .reserve-name {
+    font-size: 9px;
+  }
+  .game-sidebar .reserve-unit strong {
+    width: 21px;
+    height: 21px;
+    font-size: 10px;
+  }
+  .game-sidebar .territory-meta {
+    font-size: 9px;
+  }
+  .game-sidebar .territory-meta b {
+    font-size: 11px;
+  }
+  .game-sidebar .territory-meter {
+    padding: 5px;
+  }
+  .toolbar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+  }
+  .toolbar button {
+    min-width: 0;
+    white-space: normal;
+    padding: 8px 4px;
+    font-size: 10px;
+  }
+  .status-row {
+    gap: 5px;
+  }
+  .team-card {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    text-align: center;
+  }
+  .instruction {
+    line-height: 1.35;
+  }
+  .log {
+    max-height: 150px;
+  }
+}
+
+@media (display-mode: standalone) and (orientation: portrait) and (max-width: 390px),
+       (display-mode: fullscreen) and (orientation: portrait) and (max-width: 390px) {
+  .game-sidebar .side-card {
+    padding: 6px;
+  }
+  .game-sidebar .side-card h3 {
+    font-size: 11px;
+  }
+  .game-sidebar .action-card .actions button {
+    font-size: 9px;
+    min-height: 36px;
+  }
+  .toolbar button {
+    font-size: 9px;
+  }
+  .cell .damage-count {
+    min-width: 10px;
+    height: 10px;
+    font-size: 6px;
+  }
+}
