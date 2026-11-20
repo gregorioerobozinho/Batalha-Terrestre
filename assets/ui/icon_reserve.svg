@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<title>Ícone reserve</title>
+<defs>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8e1e8"/><stop offset=".48" stop-color="#667887"/><stop offset="1" stop-color="#263744"/></linearGradient>
+ <linearGradient id="dark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#425565"/><stop offset="1" stop-color="#172530"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2"/></filter>
+</defs>
+<rect x='16' y='22' width='96' height='84' rx='10' fill='#293f50' stroke='#d9e3e9' stroke-width='5'/><path d='M33 46 H95 M33 64 H95 M33 82 H80' stroke='#d9e3e9' stroke-width='6'/>
+</svg>

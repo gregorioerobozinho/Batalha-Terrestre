@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<title>Ícone settings</title>
+<defs>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8e1e8"/><stop offset=".48" stop-color="#667887"/><stop offset="1" stop-color="#263744"/></linearGradient>
+ <linearGradient id="dark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#425565"/><stop offset="1" stop-color="#172530"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2"/></filter>
+</defs>
+<circle cx='64' cy='64' r='20' fill='#9fb0bd'/><path d='M64 8 V28 M64 100 V120 M8 64 H28 M100 64 H120 M24 24 L38 38 M90 90 L104 104 M104 24 L90 38 M38 90 L24 104' stroke='#9fb0bd' stroke-width='12'/>
+</svg>

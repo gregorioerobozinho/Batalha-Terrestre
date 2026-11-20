@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<title>Explosão</title>
+<defs>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8e1e8"/><stop offset=".48" stop-color="#667887"/><stop offset="1" stop-color="#263744"/></linearGradient>
+ <linearGradient id="dark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#425565"/><stop offset="1" stop-color="#172530"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2"/></filter>
+</defs>
+<g><path d="M64 4 L75 34 L103 14 L91 45 L124 48 L96 67 L120 93 L87 88 L79 124 L60 95 L34 119 L40 84 L5 77 L35 58 L12 31 L47 40Z" fill="#ffb02e" stroke="#b33c19" stroke-width="5"/><circle cx="64" cy="64" r="24" fill="#fff0a0"/><circle cx="64" cy="64" r="11" fill="#fff"/></g>
+</svg>

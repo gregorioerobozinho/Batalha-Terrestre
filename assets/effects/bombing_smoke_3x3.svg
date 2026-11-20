@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<title>Fumaça de bombardeio 3x3</title>
+<defs>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8e1e8"/><stop offset=".48" stop-color="#667887"/><stop offset="1" stop-color="#263744"/></linearGradient>
+ <linearGradient id="dark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#425565"/><stop offset="1" stop-color="#172530"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2"/></filter>
+</defs>
+<g fill="#aeb9c2" opacity=".82"><circle cx="24" cy="25" r="20"/><circle cx="58" cy="20" r="24"/><circle cx="93" cy="27" r="22"/><circle cx="32" cy="65" r="25"/><circle cx="68" cy="62" r="31"/><circle cx="101" cy="69" r="24"/><circle cx="23" cy="101" r="19"/><circle cx="65" cy="105" r="24"/><circle cx="101" cy="103" r="20"/></g><g fill="#e2e7eb" opacity=".45"><circle cx="48" cy="42" r="16"/><circle cx="85" cy="84" r="18"/></g>
+</svg>

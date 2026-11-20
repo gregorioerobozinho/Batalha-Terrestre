@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<title>Ícone aircraft</title>
+<defs>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8e1e8"/><stop offset=".48" stop-color="#667887"/><stop offset="1" stop-color="#263744"/></linearGradient>
+ <linearGradient id="dark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#425565"/><stop offset="1" stop-color="#172530"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2"/></filter>
+</defs>
+<path d='M64 6 L73 51 L112 76 L108 87 L71 72 L67 116 L85 124 L85 128 L64 119 L43 128 L43 124 L61 116 L57 72 L20 87 L16 76 L55 51Z' fill='#8196a5' stroke='#1b2b35' stroke-width='4'/>
+</svg>

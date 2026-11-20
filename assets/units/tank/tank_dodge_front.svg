@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<title>Tanque esquiva front</title>
+<defs>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8e1e8"/><stop offset=".48" stop-color="#667887"/><stop offset="1" stop-color="#263744"/></linearGradient>
+ <linearGradient id="dark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#425565"/><stop offset="1" stop-color="#172530"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2"/></filter>
+</defs>
+<g transform="rotate(0 64 64)">
+<ellipse cx="64" cy="67" rx="38" ry="48" fill="#101820" opacity=".3" filter="url(#shadow)"/>
+<path d="M39 17 Q64 5 89 17 L96 31 L96 96 L88 111 Q64 122 40 111 L32 96 L32 31Z" fill="url(#metal)" stroke="#172630" stroke-width="4"/>
+<path d="M39 25 L49 20 L49 108 L39 103Z M79 20 L89 25 L89 103 L79 108Z" fill="#263a48" stroke="#0c1820" stroke-width="2"/>
+<path d="M47 28 L81 28 L81 100 L47 100Z" fill="url(#dark)" stroke="#182832" stroke-width="3"/>
+<path d="M57 16 L71 16 L70 49 L58 49Z" fill="#aab9c4" stroke="#1b2b35" stroke-width="3"/>
+<rect x="57" y="7" width="14" height="42" rx="4" fill="#879aa7" stroke="#1b2b35" stroke-width="3"/>
+<circle cx="64" cy="65" r="19" fill="#8294a0" stroke="#172630" stroke-width="4"/>
+<circle cx="64" cy="65" r="9" fill="#344957" stroke="#101b23" stroke-width="3"/>
+<path d="M51 88 L77 88" stroke="#d7e0e6" stroke-width="3" opacity=".6"/>
+<g fill="#c9d4dc"><circle cx="42" cy="39" r="3"/><circle cx="86" cy="39" r="3"/><circle cx="42" cy="88" r="3"/><circle cx="86" cy="88" r="3"/></g>
+<path d="M20 64 Q64 20 108 64 Q64 108 20 64Z" fill="none" stroke="#55d7ff" stroke-width="5" stroke-dasharray="7 5"/><path d="M18 64 l10 -8 v16z M110 64 l-10 -8 v16z" fill="#55d7ff"/></g>
+</svg>

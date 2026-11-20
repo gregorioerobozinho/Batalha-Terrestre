@@ -1,0 +1,23 @@
+# Batalha Terrestre — pacote inicial de áudio
+
+## Arquivos
+- `movimento_aviao_drone.wav`: efeito compartilhado de avião e drone.
+- `movimento_tanque.wav`: motor e esteiras do tanque.
+- `movimento_patrulha.wav`: motor da patrulha.
+- `explosao.wav`: efeito único de explosão.
+- `trilha_partida_loop.wav`: trilha instrumental original em loop.
+- `audio.js`: módulo inicial para tocar os sons no jogo.
+
+## Integração
+1. Copie a pasta `audio` para a pasta pública do aplicativo, mantendo os cinco WAVs.
+2. Copie `audio.js` para a pasta de código do jogo e ajuste os caminhos caso a estrutura seja diferente.
+3. Importe `gameAudio` no código principal.
+4. Chame `gameAudio.startMusic()` no primeiro toque/clique do usuário na tela inicial. Navegadores móveis bloqueiam autoplay com áudio antes de uma interação.
+5. Nos eventos do jogo, chame:
+   - `gameAudio.playAirMovement()` para avião/drone;
+   - `gameAudio.playTankMovement()` para tanque;
+   - `gameAudio.playPatrolMovement()` para patrulha;
+   - `gameAudio.playExplosion()` para explosões.
+
+## Observação
+Este pacote contém os recursos de áudio e um módulo de integração inicial. Ainda não está conectado ao código-fonte do jogo, pois o projeto/programação principal não foi anexado nesta conversa. Os arquivos WAV podem ser usados na versão web/PWA e em uma embalagem Android/iOS.

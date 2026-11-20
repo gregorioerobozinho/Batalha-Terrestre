@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<title>Avião vista superior left</title>
+<defs>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8e1e8"/><stop offset=".48" stop-color="#667887"/><stop offset="1" stop-color="#263744"/></linearGradient>
+ <linearGradient id="dark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#425565"/><stop offset="1" stop-color="#172530"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2"/></filter>
+</defs>
+<g transform="rotate(270 64 64)">
+<path d="M64 5 Q72 12 73 34 L111 62 L111 73 L73 66 L71 105 L88 116 L88 122 L64 115 L40 122 L40 116 L57 105 L55 66 L17 73 L17 62 L55 34 Q56 12 64 5Z" fill="url(#metal)" stroke="#172630" stroke-width="4" stroke-linejoin="round"/>
+<path d="M64 15 L67 59 L64 106 L61 59Z" fill="#e4edf2" opacity=".7"/>
+<path d="M29 65 L53 60 M99 65 L75 60" stroke="#243946" stroke-width="4"/>
+</g>
+</svg>

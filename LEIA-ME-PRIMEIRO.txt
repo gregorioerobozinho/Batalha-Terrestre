@@ -1,0 +1,12 @@
+BATALHA TERRESTRE — V7 / PRIMEIRO TESTE
+
+1. Extraia todo o conteúdo do ZIP.
+2. Abra a pasta Batalha_Terrestre_Completo_V2 no VS Code.
+3. Inicie o index.html com Live Server.
+4. Teste primeiro Dois jogadores no mesmo aparelho.
+5. Confirme o posicionamento, movimento, uma ação complementar, passar rodada e seleção de base.
+6. Teste depois Contra Provações e os apoios aéreos.
+
+A partida salva localmente no navegador. Para testar do zero, use Menu e inicie uma nova partida ou limpe os dados locais do site.
+
+Consulte NOTAS_DA_VERSAO_V7.md para alterações e limitações conhecidas.

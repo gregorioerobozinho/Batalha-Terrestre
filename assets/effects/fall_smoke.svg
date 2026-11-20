@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<title>Fumaça de queda</title>
+<defs>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8e1e8"/><stop offset=".48" stop-color="#667887"/><stop offset="1" stop-color="#263744"/></linearGradient>
+ <linearGradient id="dark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#425565"/><stop offset="1" stop-color="#172530"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2"/></filter>
+</defs>
+<g fill="#87949d" opacity=".85"><circle cx="35" cy="71" r="24"/><circle cx="62" cy="48" r="29"/><circle cx="91" cy="68" r="25"/><circle cx="62" cy="95" r="26"/></g><path d="M44 43 L84 83 M84 43 L44 83" stroke="#e8eef2" stroke-width="6" opacity=".7"/>
+</svg>

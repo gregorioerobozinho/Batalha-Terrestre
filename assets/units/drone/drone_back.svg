@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<title>Drone vista superior back</title>
+<defs>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8e1e8"/><stop offset=".48" stop-color="#667887"/><stop offset="1" stop-color="#263744"/></linearGradient>
+ <linearGradient id="dark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#425565"/><stop offset="1" stop-color="#172530"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2"/></filter>
+</defs>
+<g transform="rotate(180 64 64)">
+<path d="M64 64 L27 27 M64 64 L101 27 M64 64 L27 101 M64 64 L101 101" stroke="#9eafb9" stroke-width="7" stroke-linecap="round"/>
+<path d="M64 64 L27 27 M64 64 L101 27 M64 64 L27 101 M64 64 L101 101" stroke="#263b49" stroke-width="3" stroke-linecap="round"/>
+<g fill="#6e8797" stroke="#15242e" stroke-width="3"><circle cx="24" cy="24" r="13"/><circle cx="104" cy="24" r="13"/><circle cx="24" cy="104" r="13"/><circle cx="104" cy="104" r="13"/></g>
+<g fill="none" stroke="#c7d3da" stroke-width="3"><ellipse cx="24" cy="24" rx="20" ry="5"/><ellipse cx="104" cy="24" rx="20" ry="5"/><ellipse cx="24" cy="104" rx="20" ry="5"/><ellipse cx="104" cy="104" rx="20" ry="5"/></g>
+<rect x="48" y="48" width="32" height="32" rx="10" fill="url(#metal)" stroke="#172630" stroke-width="4"/><circle cx="64" cy="64" r="7" fill="#2e4655"/>
+</g>
+</svg>

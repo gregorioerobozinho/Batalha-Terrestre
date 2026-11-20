@@ -1,0 +1,10 @@
+{
+  "name": "Batalha Terrestre",
+  "short_name": "Batalha",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b121a",
+  "theme_color": "#101923",
+  "orientation": "portrait",
+  "icons": []
+}
